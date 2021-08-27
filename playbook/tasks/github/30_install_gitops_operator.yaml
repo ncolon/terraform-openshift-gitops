@@ -1,0 +1,147 @@
+- name: deploy openshift-operator
+  community.kubernetes.k8s:
+    state: present
+    src: "{{ item }}"
+  with_fileglob:
+    - "{{ playbook_workspace }}/repositories/gitops-0-bootstrap/setup/ocp47/*.yaml"
+
+- name: wait for gitops-operator crd
+  community.kubernetes.k8s_info:
+    kind: CRD
+    wait: yes
+    name: applications.argoproj.io
+    wait_condition:
+      reason: InitialNamesAccepted
+      status: "True"
+      type: "Established"
+
+- name: pasue for 1 minute
+  pause:
+    seconds: 15
+    
+- name: wait for gitops-operator pods
+  community.kubernetes.k8s_info:
+    kind: Pod
+    namespace: openshift-gitops
+    wait: yes
+    wait_timeout: 45
+    wait_condition:
+      status: "True"
+      type: Ready
+  register: pods_status
+  until: pods_status.resources | json_query('[*].status.conditions[?type==`Ready`][].status') | select ('match','True')
+  retries: 5
+  delay: 10
+
+
+
+- name: delete default gitopservice
+  community.kubernetes.k8s:
+    state: absent
+    api_version: pipelines.openshift.io/v1alpha1
+    kind: gitopsservice
+    namespace: openshift-gitops
+    name: cluster
+    wait: yes
+
+- name: delete default argocd instance
+  community.kubernetes.k8s:
+    state: absent
+    api_version: argoproj.io/v1alpha1
+    kind: argocd
+    namespace: openshift-gitops
+    name: openshift-gitops
+    wait: yes
+
+- name: deploy custom argocd instance with custom checks1
+  community.kubernetes.k8s:
+    state: present
+    src: "{{ item }}"
+    namespace: openshift-gitops
+  with_fileglob:
+    - "{{ playbook_workspace }}/repositories/gitops-0-bootstrap/setup/ocp47/argocd-instance/*.yaml"
+
+- name: wait for custom argocd instance
+  community.kubernetes.k8s_info:
+    kind: Pod
+    wait: yes
+    namespace: openshift-gitops
+    label_selectors:
+      - app.kubernetes.io/name = openshift-gitops-cntk-server
+    wait_condition:
+      status: "True"
+      type: ContainersReady
+
+- name: create argocd-git-override
+  community.kubernetes.k8s:
+    state: present
+    namespace: openshift-gitops
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: argocd-git-override
+      data:
+        map.yaml: |-
+          map:
+          - upstreamRepoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS}
+            originRepoUrL: {{ git_baseurl }}/{{ git_org }}/{{ git_gitops }}
+            originBranch: {{ git_gitops_branch }}
+          - upstreamRepoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_INFRA}
+            originRepoUrL: {{ git_baseurl }}/{{ git_org }}/{{ git_gitops_infra }}
+            originBranch: {{ git_gitops_infra_branch }}
+          - upstreamRepoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_SERVICES}
+            originRepoUrL: {{ git_baseurl }}/{{ git_org }}/{{ git_gitops_services }}
+            originBranch: {{ git_gitops_services_branch }}
+          - upstreamRepoURL: ${GIT_BASEURL}/${GIT_ORG}/${GIT_GITOPS_APPLICATIONS}
+            originRepoUrL: {{ git_baseurl }}/{{ git_org }}/{{ git_gitops_apps }}
+            originBranch: {{ git_gitops_apps_branch }}
+          - upstreamRepoURL: https://github.com/cloud-native-toolkit-demos/multi-tenancy-gitops-apps.git
+            originRepoUrL: {{ git_baseurl }}/{{ git_org }}/{{ git_gitops_apps }}
+            originBranch: {{ git_gitops_apps_branch }}
+
+- name: download argocd-git-override webhook
+  ansible.builtin.get_url:
+    url: https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/deployment.yaml
+    dest: /tmp/argocd-git-override-deployment.yaml
+    mode: '0664'
+
+- name: download argocd-git-override webhook
+  ansible.builtin.get_url:
+    url: https://github.com/csantanapr/argocd-git-override/releases/download/v1.1.0/webhook.yaml
+    dest: /tmp/argocd-git-override-webhook.yaml
+    mode: '0664'
+
+- name: apply argocd-git-override deployment
+  community.kubernetes.k8s:
+    state: present
+    src: /tmp/argocd-git-override-deployment.yaml
+    namespace: openshift-gitops
+
+- name: apply argocd-git-override webhook
+  community.kubernetes.k8s:
+    state: present
+    src: /tmp/argocd-git-override-webhook.yaml
+
+- name: wait for argocd-git-override pods
+  community.kubernetes.k8s_info:
+    kind: Pod
+    wait: yes
+    namespace: openshift-gitops
+    label_selectors:
+      - app = argocd-git-override
+    wait_condition:
+      status: "True"
+      type: Ready
+
+
+- name: label openshift-gitops namespace
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: openshift-gitops
+        labels: 
+          cntk: "experiment"

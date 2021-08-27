@@ -1,0 +1,13 @@
+- hosts: bastion
+  tasks:
+  - name: sealed secrets
+    include_tasks: tasks/github/10_sealed_secret.yaml
+  - name: install openshift-pipelines operator
+    include_tasks: tasks/github/20_install_pipelines_operator.yaml
+  - name: install openshift-gitops operator
+    include_tasks: tasks/github/30_install_gitops_operator.yaml
+  - name: deploy applications
+    include_tasks: tasks/github/40_deploy_applications.yaml
+  environment:
+    K8S_AUTH_KUBECONFIG: "{{ openshift_kubeconfig }}"
+    

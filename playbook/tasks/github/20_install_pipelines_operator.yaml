@@ -1,0 +1,11 @@
+- name: download openshift-pipelines operator
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/cloud-native-toolkit/multi-tenancy-gitops-services/master/operators/openshift-pipelines/operator.yaml
+    dest: /tmp/pipeline-operator.yaml
+    mode: '0664'
+
+- name: apply openshift-pipelines operator
+  community.kubernetes.k8s:
+    state: present
+    src: /tmp/pipeline-operator.yaml
+    namespace: openshift-operators

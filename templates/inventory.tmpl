@@ -1,0 +1,28 @@
+[all:children]
+bastion
+
+[all:vars]
+ansible_user=${username}
+# TODO: FIX VERSION OF PYTHON
+ansible_python_interpreter=/usr/local/bin/python3
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'
+ansible_ssh_private_key_file="~/.ssh/openshift_rsa"
+openshift_kubeconfig=${openshift_kubeconfig}
+sealed_secret_key_file=${sealed_secret_key_file}
+playbook_workspace=${playbook_workspace}
+git_baseurl=${git_baseurl}
+git_org=${git_org}
+git_gitops=${git_gitops}
+git_gitops_branch=${git_gitops_branch}
+git_gitops_infra=${git_gitops_infra}
+git_gitops_infra_branch=${git_gitops_infra_branch}
+git_gitops_services=${git_gitops_services}
+git_gitops_services_branch=${git_gitops_services_branch}
+git_gitops_apps=${git_gitops_apps}
+git_gitops_apps_branch=${git_gitops_apps_branch}
+apps_repos_local=${apps_repos_local}
+gitops_profile=${gitops_profile}
+
+
+[bastion]
+${bastion_host}

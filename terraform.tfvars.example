@@ -1,0 +1,25 @@
+# GitHub Credentials
+github_token      = "ghp_xxxxxxxxxxxxxxxxxxxxxxx"
+github_target_org = "ncolon-demos"
+
+# sealed secret, get from https://bit.ly/demo-sealed-master
+sealed_secret_key_file = "/path/to/sealed-secrets-ibm-demo-key.yaml"
+
+openshift_kubeconfig = "/path/to/kubeconfig"
+
+# Bastion Host Information
+bastion_host_public = "localhost"
+username            = "ncolon"
+playbook_workspace  = "/tmp"
+
+
+# bring your own application
+github_application_repos = {
+  ace-customer-details : {
+    source_repo : "ace-customer-details"
+    source_org : "cloud-native-toolkit-demos"
+    local : "src-ace-app-customer-details"
+    branch : "master"
+  }
+}
+
