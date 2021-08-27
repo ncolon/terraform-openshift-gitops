@@ -10,7 +10,6 @@ openshift_kubeconfig = "/path/to/kubeconfig"
 # Bastion Host Information
 bastion_host_public = "localhost"
 username            = "ncolon"
-playbook_workspace  = "/tmp"
 
 
 # bring your own application
