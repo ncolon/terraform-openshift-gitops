@@ -15,7 +15,7 @@
       status: "True"
       type: "Established"
 
-- name: pasue for 1 minute
+- name: pasue for 15 seconds
   pause:
     seconds: 15
     
@@ -53,7 +53,7 @@
     name: openshift-gitops
     wait: yes
 
-- name: deploy custom argocd instance with custom checks1
+- name: deploy custom argocd instance with custom checks
   community.kubernetes.k8s:
     state: present
     src: "{{ item }}"

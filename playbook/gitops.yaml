@@ -1,13 +1,22 @@
 - hosts: bastion
+  connection: local
   tasks:
   - name: sealed secrets
     include_tasks: tasks/github/10_sealed_secret.yaml
+    when: sealed_secret_key_file | length > 0
   - name: install openshift-pipelines operator
     include_tasks: tasks/github/20_install_pipelines_operator.yaml
   - name: install openshift-gitops operator
     include_tasks: tasks/github/30_install_gitops_operator.yaml
-  - name: deploy applications
-    include_tasks: tasks/github/40_deploy_applications.yaml
+  - name: deploy infrastructure
+    include_tasks: tasks/github/40_gitops_application.yaml
+    when: gitops_recipe | length > 0
+  - name: deploy application
+    include_tasks: tasks/github/41_gitops_infrastructure.yaml
+    when: gitops_infra | bool
+  - name: bootstrap cluster
+    include_tasks: tasks/github/42_gitops_bootstrap.yaml
   environment:
     K8S_AUTH_KUBECONFIG: "{{ openshift_kubeconfig }}"
+    KUBECONFIG: "{{ openshift_kubeconfig }}"
     

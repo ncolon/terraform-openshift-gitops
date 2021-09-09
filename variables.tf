@@ -11,6 +11,10 @@ variable "username" {
   type = string
 }
 
+variable "private_ssh_key" {
+  type = string
+}
+
 variable "playbook_workspace" {
   type    = string
   default = "/tmp"
@@ -20,38 +24,9 @@ variable "github_target_org" {
   type = string
 }
 
-variable "github_framework_repos" {
-  type = map(any)
-  default = {
-    gitops : {
-      source_repo : "multi-tenancy-gitops"
-      source_org : "cloud-native-toolkit"
-      local : "gitops-0-bootstrap"
-      branch : "master"
-    }
-    infra : {
-      source_repo : "multi-tenancy-gitops-infra"
-      source_org : "cloud-native-toolkit"
-      local : "gitops-1-infra"
-      branch : "master"
-    }
-    services : {
-      source_repo : "multi-tenancy-gitops-services"
-      source_org : "cloud-native-toolkit"
-      local : "gitops-2-services"
-      branch : "master"
-    }
-    apps : {
-      source_repo : "multi-tenancy-gitops-apps"
-      source_org : "cloud-native-toolkit"
-      local : "gitops-3-apps"
-      branch : "master"
-    }
-  }
-}
-
 variable "github_application_repos" {
-  type = map(any)
+  type    = map(any)
+  default = {}
 }
 
 variable "git_baseurl" {
@@ -63,7 +38,8 @@ variable "github_token" {
 }
 
 variable "sealed_secret_key_file" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "gitops_profile" {
@@ -71,3 +47,17 @@ variable "gitops_profile" {
   default = "0-bootstrap/single-cluster"
 }
 
+variable "gitops_recipe" {
+  type    = string
+  default = ""
+}
+
+variable "gitops_infra" {
+  type    = bool
+  default = false
+}
+
+variable "ocs_rwx_storage_class" {
+  type    = string
+  default = "ocs-storagecluster-cephfs"
+}

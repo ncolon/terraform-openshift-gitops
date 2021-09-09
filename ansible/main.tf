@@ -37,21 +37,15 @@ resource "null_resource" "run_playbook" {
   }
 
   provisioner "file" {
-    source      = "${path.root}/.ssh"
-    destination = local.playbook_workspace
+    # source      = "${path.root}/.ssh"
+    content     = var.private_ssh_key
+    destination = "${local.playbook_workspace}/id_rsa"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "chmod 600 ${local.playbook_workspace}/.ssh/id_rsa*",
-      "export PATH=$PATH:/usr/local/bin",
-      "which ansible-playbook || {",
-      "  sudo apt update",
-      "  sudo apt install python3-pip python3-jmespath -y",
-      "  sudo -H pip3 install ansible openshift -q",
-      "}",
       "export ANSIBLE_PIPELINING=$(sudo grep requiretty /etc/sudoers && echo 0 || echo 1)",
-      "ansible-playbook --private-key ${local.playbook_workspace}/.ssh/id_rsa -i ${local.playbook_workspace}/inventory ${local.playbook_workspace}/${local.basedir}/${var.playbook}"
+      "ansible-playbook -i ${local.playbook_workspace}/inventory ${local.playbook_workspace}/${local.basedir}/${var.playbook}"
     ]
   }
 }

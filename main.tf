@@ -4,17 +4,46 @@ provider "github" {
 }
 
 locals {
-  private_ssh_key = chomp(file("~/.ssh/openshift_rsa"))
+  private_ssh_key = chomp(file(var.private_ssh_key))
   local_paths     = [for key in keys(var.github_application_repos) : var.github_application_repos[key].local]
+  github_framework_repos = {
+    gitops : {
+      source_repo : "multi-tenancy-gitops"
+      source_org : "ncolon"
+      local : "gitops-0-bootstrap"
+      branch : "master"
+    }
+    infra : {
+      source_repo : "multi-tenancy-gitops-infra"
+      source_org : "ncolon"
+      local : "gitops-1-infra"
+      branch : "master"
+    }
+    services : {
+      source_repo : "multi-tenancy-gitops-services"
+      source_org : "cloud-native-toolkit"
+      local : "gitops-2-services"
+      branch : "master"
+    }
+    apps : {
+      source_repo : "multi-tenancy-gitops-apps"
+      source_org : "cloud-native-toolkit"
+      local : "gitops-3-apps"
+      branch : "master"
+    }
+  }
 }
 
 module "github" {
-  source                   = "./github"
+  source = "./github"
+
   github_target_org        = var.github_target_org
   github_token             = var.github_token
-  github_framework_repos   = var.github_framework_repos
+  github_framework_repos   = local.github_framework_repos
   github_application_repos = var.github_application_repos
 }
+
+
 
 module "gitops_playbook" {
   depends_on = [
@@ -37,16 +66,19 @@ module "gitops_playbook" {
     playbook_workspace         = var.playbook_workspace
     git_baseurl                = var.git_baseurl
     git_org                    = var.github_target_org
-    git_gitops                 = var.github_framework_repos["gitops"].source_repo
-    git_gitops_branch          = var.github_framework_repos["gitops"].branch
-    git_gitops_infra           = var.github_framework_repos["infra"].source_repo
-    git_gitops_infra_branch    = var.github_framework_repos["infra"].branch
-    git_gitops_services        = var.github_framework_repos["services"].source_repo
-    git_gitops_services_branch = var.github_framework_repos["services"].branch
-    git_gitops_apps            = var.github_framework_repos["apps"].source_repo
-    git_gitops_apps_branch     = var.github_framework_repos["apps"].branch
+    git_gitops                 = local.github_framework_repos["gitops"].source_repo
+    git_gitops_branch          = local.github_framework_repos["gitops"].branch
+    git_gitops_infra           = local.github_framework_repos["infra"].source_repo
+    git_gitops_infra_branch    = local.github_framework_repos["infra"].branch
+    git_gitops_services        = local.github_framework_repos["services"].source_repo
+    git_gitops_services_branch = local.github_framework_repos["services"].branch
+    git_gitops_apps            = local.github_framework_repos["apps"].source_repo
+    git_gitops_apps_branch     = local.github_framework_repos["apps"].branch
     gitops_profile             = var.gitops_profile
     apps_repos_local           = "[${join(",", [for key in keys(var.github_application_repos) : var.github_application_repos[key].local])}]"
+    gitops_recipe              = var.gitops_recipe
+    gitops_infra               = var.gitops_infra
+    ocs_rwx_storage_class      = var.ocs_rwx_storage_class
   })
 }
 

@@ -2,7 +2,7 @@
 github_token      = "ghp_xxxxxxxxxxxxxxxxxxxxxxx"
 github_target_org = "ncolon-demos"
 
-# sealed secret, get from https://bit.ly/demo-sealed-master
+# sealed secret, get from https://bit.ly/demo-sealed-master if needed
 sealed_secret_key_file = "/path/to/sealed-secrets-ibm-demo-key.yaml"
 
 openshift_kubeconfig = "/path/to/kubeconfig"
@@ -22,3 +22,4 @@ github_application_repos = {
   }
 }
 
+gitops_recipe = "scripts/bom/ace"

@@ -1,0 +1,37 @@
+- name: update infrastructure items
+  shell:
+    cmd: |
+      # terrafrom file provisioner strips 755 off .sh files
+      chmod +x ./scripts/*.sh
+      source ./scripts/infra-mod.sh 
+    chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
+
+# # - name: find all yamls in gitops repo
+# #   find:
+# #     paths: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
+# #     patterns: '*.yaml'
+# #     recurse: yes
+# #   register: gitops_yamls
+# #   when: gitops_infra|bool
+
+# # - name: replace default storage class managed-nfs-storage with {{ ocs_rwx_storage_class }}
+# #   replace:
+# #     path: "{{ item.path }}"
+# #     regexp: managed-nfs-storage
+# #     replace: "{{ ocs_rwx_storage_class }}"
+# #   with_items: "{{ gitops_yamls.files }}"
+# #   loop_control:
+# #     label: "{{ item.path }}"
+# #   when: gitops_infra|bool
+  
+- name: replace default storage class managed-nfs-storage with {{ ocs_rwx_storage_class }}
+  shell:
+    cmd: |
+      find . -name '*.yaml' -print0 |
+        while IFS= read -r -d '' File; do
+          if grep -q "managed-nfs-storage" "$File"; then
+            sed -i'.bak' -e "s#managed-nfs-storage#{{ ocs_rwx_storage_class }}#" $File
+            rm "${File}.bak"
+          fi
+        done
+    chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"

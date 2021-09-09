@@ -6,7 +6,6 @@ ansible_user=${username}
 # TODO: FIX VERSION OF PYTHON
 ansible_python_interpreter=/usr/local/bin/python3
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o IdentitiesOnly=yes'
-ansible_ssh_private_key_file="~/.ssh/openshift_rsa"
 openshift_kubeconfig=${openshift_kubeconfig}
 sealed_secret_key_file=${sealed_secret_key_file}
 playbook_workspace=${playbook_workspace}
@@ -22,7 +21,9 @@ git_gitops_apps=${git_gitops_apps}
 git_gitops_apps_branch=${git_gitops_apps_branch}
 apps_repos_local=${apps_repos_local}
 gitops_profile=${gitops_profile}
-
+gitops_recipe=${gitops_recipe}
+gitops_infra=${gitops_infra}
+ocs_rwx_storage_class=${ocs_rwx_storage_class}
 
 [bastion]
-${bastion_host}
+127.0.0.1
