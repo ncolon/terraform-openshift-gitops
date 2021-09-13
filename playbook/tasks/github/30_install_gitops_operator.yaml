@@ -1,4 +1,4 @@
-- name: deploy openshift-operator
+- name: deploy openshift-gitops operator
   community.kubernetes.k8s:
     state: present
     src: "{{ item }}"

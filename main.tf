@@ -9,13 +9,13 @@ locals {
   github_framework_repos = {
     gitops : {
       source_repo : "multi-tenancy-gitops"
-      source_org : "ncolon"
+      source_org : "cloud-native-toolkit"
       local : "gitops-0-bootstrap"
       branch : "master"
     }
     infra : {
       source_repo : "multi-tenancy-gitops-infra"
-      source_org : "ncolon"
+      source_org : "cloud-native-toolkit"
       local : "gitops-1-infra"
       branch : "master"
     }
@@ -27,7 +27,7 @@ locals {
     }
     apps : {
       source_repo : "multi-tenancy-gitops-apps"
-      source_org : "cloud-native-toolkit"
+      source_org : "cloud-native-toolkit-demos"
       local : "gitops-3-apps"
       branch : "master"
     }

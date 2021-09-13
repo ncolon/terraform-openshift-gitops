@@ -35,3 +35,11 @@
           fi
         done
     chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
+
+- name: push updated gitops-0-bootstrap repo
+  shell:
+    cmd: |
+      git add .
+      git commit -m "update storage classes"
+      git push origin
+    chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
