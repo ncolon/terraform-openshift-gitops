@@ -1,6 +1,7 @@
 - name: update infrastructure items
   shell:
     cmd: |
+      chmod +x ./scripts/*.sh
       source ./scripts/infra-mod.sh 
     chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
 
