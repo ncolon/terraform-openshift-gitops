@@ -40,7 +40,7 @@ git remote remove origin
 git remote add origin https://${var.github_token}@${split("/", var.git_baseurl)[length(split("/", var.git_baseurl)) - 1]}/${var.github_target_org}/${each.value.source_repo}
 git push --set-upstream origin master
 git checkout ${each.value.branch} || git checkout --track origin/${each.value.branch}
-find . -name '*.sh' -exec chmod +x {} \;
+
 popd
 EOF
   }
