@@ -13,7 +13,7 @@ These terraform and ansible scripts will automate the deployment of the GitOps F
 5. [A GitHub Org](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch)
 6. [A GitHub Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
 
-	- Token should have `repo`, `admin:repo_hook` and optionally, `delete_repo` to clean up if needed
+- Token should have `repo`, `admin:repo_hook` and optionally, `delete_repo` to clean up if needed
 
 ## Sample .tfvars file
 
@@ -30,8 +30,6 @@ private_ssh_key  = "~/.ssh/openshift_rsa"
 gitops_infra = true
 ```
 
-
-
 ## Quick Start
 
 ```bash
@@ -46,26 +44,23 @@ $ oc extract secrets/openshift-gitops-cntk-cluster --keys=admin.password -n open
 ABCDABCDABCDABCDABCDABCDABCDABCD
 ```
 
-
-
 ## Variable Reference
 
-| Variable                  | Description                                                  | Type   | Default                    |
-| ------------------------- | ------------------------------------------------------------ | ------ | -------------------------- |
-| git_baseurl               | GitHub URL                                                   | string | https://github.com         |
-| github_target_org\*    | GitHub Organization.                                         | string | -                          |
-| github_token\*         | GitHub Personal Access Token                                 | string | -                          |
-| github_application_repos  | GitHub Application/workload repositories                     | map    | {}                         |
-| gitops_profile            | Cloud Native Toolkit GitOps Profile. See [here](https://cloudnativetoolkit.dev/adopting/use-cases/gitops/gitops-ibm-cloud-paks/#gitops) for more info. | string | 0-bootstrap/single-cluster |
-| gitops_recipe             | [Experimental] Path to GitOps recipe inside the multi-tenancy-gitops repo. ex.:`scripts/bom/ace` | string | -                          |
-| gitops_infra              | If set to true, automation will include storage and infrastructure machinesets, as well as deploy OpenShift Container Storage/Data Foundation | bool   | false                      |
-| bastion_host\*         | Hostname or IP Address of the bastion host where we will run ansible on | string | -                          |
-| bastion_username\*     | Username on `bastion_host`                                   | string | -                          |
-| openshift_kubeconfig\* | Path to your cluster's kubeconfig file                       | string | -                          |
-| bootstrap_cluster         | When set to `false` we will only configure and populate the gitops repositories in your `github_target_org`.  If `true` we will deploy the ArgoCD applications as well into your cluster | bool   | true                       |
-| playbook_workspace        | Path in `bastion_host` where artifacts will be copied to     | string | /tmp                       |
-| private_ssh_key\*      | Path to SSH Private Key                                      | string | -                          |
-| sealed_secret_key_file    | Path to sealed secret operator key file. **DO NOT CHECK INTO GIT** | string |                            |
+| Variable                 | Description                                                                                                                                                                             | Type   | Default                    |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------------------------- |
+| git_baseurl              | GitHub URL                                                                                                                                                                              | string | https://github.com         |
+| github_target_org\*      | GitHub Organization.                                                                                                                                                                    | string | -                          |
+| github_token\*           | GitHub Personal Access Token                                                                                                                                                            | string | -                          |
+| github_application_repos | GitHub Application/workload repositories                                                                                                                                                | map    | {}                         |
+| gitops_profile           | Cloud Native Toolkit GitOps Profile. See [here](https://cloudnativetoolkit.dev/adopting/use-cases/gitops/gitops-ibm-cloud-paks/#gitops) for more info.                                  | string | 0-bootstrap/single-cluster |
+| gitops_recipe            | [Experimental] Path to GitOps recipe inside the multi-tenancy-gitops repo. ex.:`scripts/bom/ace`                                                                                        | string | -                          |
+| gitops_infra             | If set to true, automation will include storage and infrastructure machinesets, as well as deploy OpenShift Container Storage/Data Foundation                                           | bool   | false                      |
+| bastion_host\*           | Hostname or IP Address of the bastion host where we will run ansible on                                                                                                                 | string | -                          |
+| bastion_username\*       | Username on `bastion_host`                                                                                                                                                              | string | -                          |
+| openshift_kubeconfig\*   | Path to your cluster's kubeconfig file                                                                                                                                                  | string | -                          |
+| bootstrap_cluster        | When set to `false` we will only configure and populate the gitops repositories in your `github_target_org`. If `true` we will deploy the ArgoCD applications as well into your cluster | bool   | true                       |
+| playbook_workspace       | Path in `bastion_host` where artifacts will be copied to                                                                                                                                | string | /tmp                       |
+| private_ssh_key\*        | Path to SSH Private Key                                                                                                                                                                 | string | -                          |
+| sealed_secret_key_file   | Path to sealed secret operator key file. **DO NOT CHECK INTO GIT**                                                                                                                      | string |                            |
 
 \* Required Variable
-
