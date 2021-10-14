@@ -7,9 +7,11 @@ sealed_secret_key_file = "/path/to/sealed-secrets-ibm-demo-key.yaml"
 
 openshift_kubeconfig = "/path/to/kubeconfig"
 
-# Bastion Host Information
-bastion_host_public = "localhost"
-username            = "ncolon"
+bastion_host     = "localhost"
+bastion_username = "username"
+private_ssh_key  = "~/.ssh/openshift_rsa"
+
+gitops_infra = true
 
 
 # bring your own application
@@ -22,4 +24,3 @@ github_application_repos = {
   }
 }
 
-gitops_recipe = "scripts/bom/ace"

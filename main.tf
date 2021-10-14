@@ -50,19 +50,19 @@ module "gitops_playbook" {
     module.github
   ]
 
-  source              = "./ansible"
-  playbook_path       = "${path.module}/playbook"
-  playbook            = "gitops.yaml"
-  username            = var.username
-  private_ssh_key     = local.private_ssh_key
-  bastion_host_public = var.bastion_host_public
-  playbook_workspace  = var.playbook_workspace
-  upload_files        = "${path.root}/repositories"
+  source             = "./ansible"
+  playbook_path      = "${path.module}/playbook"
+  playbook           = "gitops.yaml"
+  username           = var.bastion_username
+  private_ssh_key    = local.private_ssh_key
+  bastion_host       = var.bastion_host
+  playbook_workspace = var.playbook_workspace
+  upload_files       = "${path.root}/repositories"
   inventory = templatefile("${path.module}/templates/inventory.tmpl", {
-    bastion_host               = var.bastion_host_public
-    username                   = var.username
-    openshift_kubeconfig       = var.openshift_kubeconfig
-    sealed_secret_key_file     = base64encode(file(var.sealed_secret_key_file))
+    bastion_host               = var.bastion_host
+    username                   = var.bastion_username
+    openshift_kubeconfig       = base64encode(file(var.openshift_kubeconfig))
+    sealed_secret_key_file     = fileexists(var.sealed_secret_key_file) ? base64encode(file(var.sealed_secret_key_file)) : ""
     playbook_workspace         = var.playbook_workspace
     git_baseurl                = var.git_baseurl
     git_org                    = var.github_target_org
@@ -78,7 +78,7 @@ module "gitops_playbook" {
     apps_repos_local           = "[${join(",", [for key in keys(var.github_application_repos) : var.github_application_repos[key].local])}]"
     gitops_recipe              = var.gitops_recipe
     gitops_infra               = var.gitops_infra
-    ocs_rwx_storage_class      = var.ocs_rwx_storage_class
+    rwx_storage_class          = var.rwx_storage_class
   })
 }
 

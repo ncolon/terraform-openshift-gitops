@@ -1,6 +1,8 @@
 - hosts: bastion
   connection: local
   tasks:
+  - name: kubeconfig
+    include_tasks: tasks/github/00_write_kubeconfig.yaml
   - name: sealed secrets
     include_tasks: tasks/github/10_sealed_secret.yaml
     when: sealed_secret_key_file | length > 0
@@ -16,7 +18,8 @@
     when: gitops_infra | bool
   - name: bootstrap cluster
     include_tasks: tasks/github/42_gitops_bootstrap.yaml
+    when: bootstrap_cluster | bool
   environment:
-    K8S_AUTH_KUBECONFIG: "{{ openshift_kubeconfig }}"
-    KUBECONFIG: "{{ openshift_kubeconfig }}"
+    K8S_AUTH_KUBECONFIG: "/tmp/kubeconfig"
+    KUBECONFIG: "/tmp/kubeconfig"
     

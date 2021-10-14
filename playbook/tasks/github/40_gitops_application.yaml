@@ -9,6 +9,6 @@
   shell:
     cmd: |
       git add .
-      git commit -m "Deploy Cloud Pak ACE"
+      git commit -m "Deploy GitOps Recipe {{ gitops_recipe }}"
       git push origin
     chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"

@@ -8,7 +8,7 @@ resource "null_resource" "upload_artifacts" {
   connection {
     type        = "ssh"
     user        = var.username
-    host        = var.bastion_host_public
+    host        = var.bastion_host
     private_key = var.private_ssh_key
   }
 
@@ -22,7 +22,7 @@ resource "null_resource" "run_playbook" {
   connection {
     type        = "ssh"
     user        = var.username
-    host        = var.bastion_host_public
+    host        = var.bastion_host
     private_key = var.private_ssh_key
   }
 
@@ -37,14 +37,14 @@ resource "null_resource" "run_playbook" {
   }
 
   provisioner "file" {
-    # source      = "${path.root}/.ssh"
     content     = var.private_ssh_key
     destination = "${local.playbook_workspace}/id_rsa"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "export ANSIBLE_PIPELINING=$(sudo grep requiretty /etc/sudoers && echo 0 || echo 1)",
+      "export ANSIBLE_PIPELINING=1",
+      "export PATH=/usr/local/bin:$PATH",
       "ansible-playbook -i ${local.playbook_workspace}/inventory ${local.playbook_workspace}/${local.basedir}/${var.playbook}"
     ]
   }

@@ -1,4 +1,4 @@
-variable "bastion_host_public" {
+variable "bastion_host" {
   type = string
 }
 

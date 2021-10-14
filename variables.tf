@@ -1,13 +1,12 @@
-variable "bastion_host_public" {
+variable "bastion_host" {
   type = string
 }
 
 variable "openshift_kubeconfig" {
   type    = string
-  default = ""
 }
 
-variable "username" {
+variable "bastion_username" {
   type = string
 }
 
@@ -24,6 +23,11 @@ variable "github_target_org" {
   type = string
 }
 
+variable "bootstrap_cluster" {
+  type    = bool
+  default = true
+}
+
 variable "github_application_repos" {
   type    = map(any)
   default = {}
@@ -33,6 +37,7 @@ variable "git_baseurl" {
   type    = string
   default = "https://github.com"
 }
+
 variable "github_token" {
   type = string
 }
@@ -57,7 +62,7 @@ variable "gitops_infra" {
   default = false
 }
 
-variable "ocs_rwx_storage_class" {
+variable "rwx_storage_class" {
   type    = string
   default = "ocs-storagecluster-cephfs"
 }

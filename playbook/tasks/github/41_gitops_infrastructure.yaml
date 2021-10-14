@@ -5,13 +5,13 @@
       source ./scripts/infra-mod.sh 
     chdir: "{{ playbook_workspace }}/repositories/gitops-0-bootstrap"
 
-- name: replace default storage class managed-nfs-storage with {{ ocs_rwx_storage_class }}
+- name: replace default storage class managed-nfs-storage with {{ rwx_storage_class }}
   shell:
     cmd: |
       find . -name '*.yaml' -print0 |
         while IFS= read -r -d '' File; do
           if grep -q "managed-nfs-storage" "$File"; then
-            sed -i'.bak' -e "s#managed-nfs-storage#{{ ocs_rwx_storage_class }}#" $File
+            sed -i'.bak' -e "s#managed-nfs-storage#{{ rwx_storage_class }}#" $File
             rm "${File}.bak"
           fi
         done
